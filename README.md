@@ -1,2 +1,0 @@
-CSGD-Assignment
-===============
