@@ -38,13 +38,13 @@ namespace GameStateManagementSample
         InputAction pauseAction;
 
         Vector2 spOne, spTwo, spThree, spFour;
-        Rectangle rectOne, rectTwo, rectThree, rectFour, playerRect;
-
+        //Rectangle rectOne, rectTwo, rectThree, rectFour, playerRect;
+        RectangleF rectOne, rectTwo, rectThree, rectFour, playerRect;
         Vector2 playerPosition;
 
-        Rectangle[] enemyRect;
+        RectangleF[] enemyRect;
         Vector2[] enemyMovementArray;
-        int enemyMoveToken;
+        float enemySpeed;
 
         float timer;
         int bulletLevelQuarter;
@@ -98,6 +98,7 @@ namespace GameStateManagementSample
                 spThree = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width - 30 - enemy.Width, ScreenManager.GraphicsDevice.Viewport.Y + 30); // upper right
                 spFour = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width - 30 - enemy.Width, ScreenManager.GraphicsDevice.Viewport.Height - 30 - enemy.Height); // lower right
 
+                /*
                 rectOne = new Rectangle(Convert.ToInt32(spOne.X), Convert.ToInt32(spOne.Y), enemy.Width, enemy.Height);
                 rectTwo = new Rectangle(Convert.ToInt32(spTwo.X), Convert.ToInt32(spTwo.Y), enemy.Width, enemy.Height);
                 rectThree = new Rectangle(Convert.ToInt32(spThree.X), Convert.ToInt32(spThree.Y), enemy.Width, enemy.Height);
@@ -111,27 +112,25 @@ namespace GameStateManagementSample
                 enemyRect[1] = rectTwo;
                 enemyRect[2] = rectThree;
                 enemyRect[3] = rectFour;
+                */
 
-                enemyMovementArray = new Vector2[10 * enemyRect.Length];
+                rectOne = new RectangleF(spOne.X, spOne.Y, enemy.Width, enemy.Height);
+                rectTwo = new RectangleF(spTwo.X, spTwo.Y, enemy.Width, enemy.Height);
+                rectThree = new RectangleF(spThree.X, spThree.Y, enemy.Width, enemy.Height);
+                rectFour = new RectangleF(spFour.X, spFour.Y, enemy.Width, enemy.Height);
 
-                for (int i = 0; i < enemyRect.Length; i++)
-                {
-                    for (int a = 0; a < enemyMovementArray.Length / enemyRect.Length; a++)
-                    {
-                        if (a == 0 + (i * 10))
-                        {
-                            enemyMovementArray[a + (i * 10)].X = (playerRect.X - enemyRect[i].X) / 25;
-                            enemyMovementArray[a + (i * 10)].Y = (playerRect.Y - enemyRect[i].Y) / 25;
-                        }
-                        else
-                        {
-                            enemyMovementArray[a + (i * 10)].X = (playerRect.X - (enemyRect[i].X + enemyMovementArray[a + (i * 10) - 1].X)) / 25;
-                            enemyMovementArray[a + (i * 10)].Y = (playerRect.Y - (enemyRect[i].Y + enemyMovementArray[a + (i * 10) - 1].Y)) / 25;
-                        }
-                    }
-                }
+                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - player.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height / 2);
+                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, player.Width, player.Height); // player spawn
 
-                enemyMoveToken = 0;
+                enemyRect = new RectangleF[4];
+                enemyRect[0] = rectOne;
+                enemyRect[1] = rectTwo;
+                enemyRect[2] = rectThree;
+                enemyRect[3] = rectFour;
+
+                enemyMovementArray = new Vector2[enemyRect.Length];
+
+                enemySpeed = 20f;
 
                 timer = 0;
 
@@ -218,39 +217,9 @@ namespace GameStateManagementSample
                 {
                     timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                    TestChaseLevel();
                     // Bullet level
-                    //BulletLevel();
+                    BulletLevel();
                 }
-            }
-        }
-
-        public void TestChaseLevel()
-        {
-            for (int i = 0; i < enemyRect.Length; i++)
-            {
-                enemyRect[i].X += (int)enemyMovementArray[enemyMoveToken + (i * 10)].X;
-                enemyRect[i].Y += (int)enemyMovementArray[enemyMoveToken + (i * 10)].Y;
-            }
-
-            for (int i = 0; i < enemyRect.Length; i++)
-            {
-                if (enemyMoveToken - 1 < 0)
-                {
-                    enemyMovementArray[enemyMoveToken + (i * 10)].X = (playerRect.X - (enemyRect[i].X + enemyMovementArray[((enemyMovementArray.Length / enemyRect.Length) - 1) + (i * 10)].X)) / 25;
-                    enemyMovementArray[enemyMoveToken + (i * 10)].Y = (playerRect.Y - (enemyRect[i].Y + enemyMovementArray[((enemyMovementArray.Length / enemyRect.Length) - 1) + (i * 10)].Y)) / 25;
-                }
-                else
-                {
-                    enemyMovementArray[enemyMoveToken + (i * 10)].X = (playerRect.X - (enemyRect[i].X + enemyMovementArray[enemyMoveToken - 1 + (i * 10)].X)) / 25;
-                    enemyMovementArray[enemyMoveToken + (i * 10)].Y = (playerRect.Y - (enemyRect[i].Y + enemyMovementArray[enemyMoveToken - 1 + (i * 10)].Y)) / 25;
-                }
-            }
-
-            enemyMoveToken++;
-            if (enemyMoveToken > 9)
-            {
-                enemyMoveToken = 0;
             }
         }
 
@@ -260,7 +229,9 @@ namespace GameStateManagementSample
             {
                 if (timer >= bulletLevelQuarter * 3) // Spawn new enemy every 3 seconds
                 {
-                    enemyMovementArray[bulletLevelQuarter] = new Vector2((playerPosition.X - enemyRect[bulletLevelQuarter].X) / 25, (playerPosition.Y - enemyRect[bulletLevelQuarter].Y) / 25);
+                    enemyMovementArray[bulletLevelQuarter] = new Vector2((playerRect.X - enemyRect[bulletLevelQuarter].X), (playerRect.Y - enemyRect[bulletLevelQuarter].Y));
+                    enemyMovementArray[bulletLevelQuarter].Normalize();
+                    enemyMovementArray[bulletLevelQuarter] *= enemySpeed;
                     bulletLevelQuarter++;
                 }
             }
@@ -268,23 +239,16 @@ namespace GameStateManagementSample
             // Moving the enemies
             for (int index = 0; index < bulletLevelQuarter; index++)
             {
-                enemyRect[index].X += (int)enemyMovementArray[index].X + 1;
-                enemyRect[index].Y += (int)enemyMovementArray[index].Y + 1;
+                enemyRect[index].X += enemyMovementArray[index].X;
+                enemyRect[index].Y += enemyMovementArray[index].Y;
 
-                if (enemyRect[index].Left >= ScreenManager.GraphicsDevice.Viewport.Width ||
-                    enemyRect[index].Right <= ScreenManager.GraphicsDevice.Viewport.X ||
-                    enemyRect[index].Top >= ScreenManager.GraphicsDevice.Viewport.Height ||
-                    enemyRect[index].Bottom <= ScreenManager.GraphicsDevice.Viewport.Y)
+                if (enemyRect[index].Left > ScreenManager.GraphicsDevice.Viewport.Width + 50 ||
+                    enemyRect[index].Right < ScreenManager.GraphicsDevice.Viewport.X - 50 ||
+                    enemyRect[index].Top > ScreenManager.GraphicsDevice.Viewport.Height + 50 ||
+                    enemyRect[index].Bottom < ScreenManager.GraphicsDevice.Viewport.Y - 50)
                 {
                     // Moving right
-                    if(enemyMovementArray[index].X >= 1)
                     BulletSpawnPoint(index);
-                }
-
-                // Player lose
-                if (playerRect.Intersects(enemyRect[index]))
-                {
-
                 }
             }
         }
@@ -292,26 +256,35 @@ namespace GameStateManagementSample
         public void BulletSpawnPoint(int index)
         {
             Random rand = new Random();
-            int numX = rand.Next(0, 2);
-            int numY = rand.Next(0, 2);
+            int randomSpawn, numX, numY;
 
-            switch (numX)
+            randomSpawn = rand.Next(0, 2);
+
+            if (randomSpawn == 0)
             {
-                case 0: enemyRect[index].X = rand.Next(-60, -10);
-                    break;
-                case 1: enemyRect[index].X = rand.Next(1300, 1350);
-                    break;
+                do
+                {
+                    numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
+
+                numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+            }
+            else
+            {
+                numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+
+                do
+                {
+                    numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
             }
 
-            switch (numY)
-            {
-                case 0: enemyRect[index].Y = rand.Next(-60, -10);
-                    break;
-                case 1: enemyRect[index].Y = rand.Next(1300, 1350);
-                    break;
-            }
+            enemyRect[index].X = numX;
+            enemyRect[index].Y = numY;
 
-            enemyMovementArray[index] = new Vector2((playerPosition.X - enemyRect[index].X) / 20, (playerPosition.Y - enemyRect[index].Y) / 20);
+            enemyMovementArray[index] = new Vector2((playerRect.X - enemyRect[index].X), (playerRect.Y - enemyRect[index].Y));
+            enemyMovementArray[index].Normalize();
+            enemyMovementArray[index] *= enemySpeed;
         }
 
         public Vector2 EnemyMovement(int index)
@@ -405,7 +378,8 @@ namespace GameStateManagementSample
                 {
                     if (boundary.Y >= 0 && boundary.Y <= ScreenManager.GraphicsDevice.Viewport.Height)
                     {
-                        playerPosition += movement * 8f;
+                        playerRect.X += movement.X * 8f;
+                        playerRect.Y += movement.Y * 8f;
                     }
                 }
             }
@@ -427,12 +401,13 @@ namespace GameStateManagementSample
             spriteBatch.Begin();
 
             //spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
-            spriteBatch.Draw(enemy, enemyRect[0], Color.Red);
-            spriteBatch.Draw(enemy, enemyRect[1], Color.Blue);
-            spriteBatch.Draw(enemy, enemyRect[2], Color.Green);
-            spriteBatch.Draw(enemy, enemyRect[3], Color.Purple);
+            for(int i = 0; i < enemyRect.Length; i++)
+            {
+                Vector2 enemyStartSpawn = enemyRect[i].Position;
+                spriteBatch.Draw(enemy, enemyStartSpawn, Color.Red);
+            }
 
-            spriteBatch.Draw(player, playerPosition, Color.White);
+            spriteBatch.Draw(player, playerRect.Position, Color.White);
 
             spriteBatch.End();
 
