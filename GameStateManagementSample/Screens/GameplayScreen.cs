@@ -47,9 +47,8 @@ namespace GameStateManagementSample
 
         // Test level
         bool snakeSpawn;
-        float centerX, centerY, radius, speed, angle, xCoord, yCoord;
-        double speedScale;
-        Vector2 circlePosition;
+        float centerX, centerY, radius, speed, angle, xCoord, yCoord, speedScale;
+        RectangleF[] circlePosition;
 
         float timer;
         int bulletLevelQuarter;
@@ -171,9 +170,13 @@ namespace GameStateManagementSample
                 centerX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - enemy.Width / 2;
                 centerY = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
                 radius = 100;
-                speed = 6;
-                speedScale = ((0.001 * 2 * Math.PI) / speed);
-                circlePosition = new Vector2();
+                speed = 60;
+                speedScale = (float)((0.001 * 2 * Math.PI) / speed);
+                circlePosition = new RectangleF[4];
+                for (int i = 0; i < circlePosition.Length; i++)
+                {
+                    circlePosition[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+                }
 
                 // once the load has finished, we use ResetElapsedTime to tell the game's
                 // timing mechanism that we have just finished a very long frame, and that
@@ -257,9 +260,34 @@ namespace GameStateManagementSample
                     //BulletLevel();
 
                     angle = (float)gameTime.TotalGameTime.TotalSeconds;
-                    xCoord = (float)(centerX + Math.Sin(angle) * radius);
-                    yCoord = (float)(centerY + Math.Cos(angle) * radius);
-                    circlePosition = new Vector2(xCoord, yCoord);
+
+                    for (int i = 0; i < circlePosition.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                xCoord = (float)(centerX + Math.Sin(angle) * radius);
+                                yCoord = (float)(centerY + Math.Cos(angle) * radius);
+                                break;
+                            case 1:
+                                xCoord = (float)(centerX + Math.Sin(angle - 1.5f) * radius);
+                                yCoord = (float)(centerY + Math.Cos(angle - 1.5f) * radius);
+                                break;
+                            case 2:
+                                xCoord = (float)(centerX + Math.Sin(angle - 3.0f) * radius);
+                                yCoord = (float)(centerY + Math.Cos(angle - 3.0f) * radius);
+                                break;
+                            case 3:
+                                xCoord = (float)(centerX + Math.Sin(angle - 4.5f) * radius);
+                                yCoord = (float)(centerY + Math.Cos(angle - 4.5f) * radius);
+                                break;
+                        }
+
+                        circlePosition[i].X = xCoord;
+                        circlePosition[i].Y = yCoord;
+                    }
+
+                    centerX += 1;
                 }
             }
         }
@@ -289,12 +317,18 @@ namespace GameStateManagementSample
             {
                 enemyRect[i].X = enemyRect[i - 1].X;
                 enemyRect[i].Y = enemyRect[i - 1].Y;
+
+                if (enemyRect[enemyRect.Length - 1].X >= ScreenManager.GraphicsDevice.Viewport.Width)
+                {
+                    snakeSpawn = false;
+                }
             }
 
             enemyRect[0].X += 0.5f * enemySpeed;
             enemyRect[0].Y += (float)Math.Cos(enemyRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
         }
 
+        #region Bullet Level
         public void BulletLevel()
         {
             if (bulletLevelQuarter < enemyRect.Length)
@@ -358,7 +392,9 @@ namespace GameStateManagementSample
             enemyMovementArray[index].Normalize();
             enemyMovementArray[index] *= enemySpeed;
         }
+        #endregion
 
+        // not used for now
         public Vector2 EnemyMovement(int index)
         {
             Vector2 movement = new Vector2(0, 0);
@@ -473,8 +509,19 @@ namespace GameStateManagementSample
 
             spriteBatch.Draw(player, playerRect.Position, Color.White);
 
-            spriteBatch.Draw(enemy, circlePosition, Color.Black);
+            /*
+            for (int i = 0; i < circlePosition.Length; i++)
+            {
+                spriteBatch.Draw(enemy, circlePosition[i].Position, Color.Black);
+            }
+             */
 
+            spriteBatch.Draw(enemy, circlePosition[0].Position, Color.Black);
+            spriteBatch.Draw(enemy, circlePosition[1].Position, Color.Yellow);
+            spriteBatch.Draw(enemy, circlePosition[2].Position, Color.Red);
+            spriteBatch.Draw(enemy, circlePosition[3].Position, Color.Green);
+
+            spriteBatch.DrawString(gameFont, timer.ToString(), new Vector2(100, 100), Color.White);
             spriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.
