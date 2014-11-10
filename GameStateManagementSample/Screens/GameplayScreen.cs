@@ -37,14 +37,19 @@ namespace GameStateManagementSample
 
         InputAction pauseAction;
 
-        Vector2 spOne, spTwo, spThree, spFour;
-        //Rectangle rectOne, rectTwo, rectThree, rectFour, playerRect;
-        RectangleF rectOne, rectTwo, rectThree, rectFour, playerRect;
+        RectangleF playerRect;
         Vector2 playerPosition;
 
         RectangleF[] enemyRect;
         Vector2[] enemyMovementArray;
         float enemySpeed;
+        float playerSpeed;
+
+        // Test level
+        bool snakeSpawn;
+        float centerX, centerY, radius, speed, angle, xCoord, yCoord;
+        double speedScale;
+        Vector2 circlePosition;
 
         float timer;
         int bulletLevelQuarter;
@@ -84,6 +89,11 @@ namespace GameStateManagementSample
 
                 gameFont = content.Load<SpriteFont>("gamefont");
 
+                // A real game would probably have more content than this sample, so
+                // it would take longer to load. We simulate that by delaying for a
+                // while, giving you a chance to admire the beautiful loading screen.
+                Thread.Sleep(1000);
+
                 // Reset pause mode when new game starts
                 ScreenManager.StartGame = false;
                 ScreenManager.PauseGame = true;
@@ -92,54 +102,78 @@ namespace GameStateManagementSample
                 enemy = content.Load<Texture2D>("blackCube");
                 player = content.Load<Texture2D>("whiteCube");
 
+                /*
                 // spawn points
                 spOne = new Vector2(ScreenManager.GraphicsDevice.Viewport.X + 30, ScreenManager.GraphicsDevice.Viewport.Y + 30); // upper left
                 spTwo = new Vector2(ScreenManager.GraphicsDevice.Viewport.X + 30, ScreenManager.GraphicsDevice.Viewport.Height - 30 - enemy.Height); // lower left
                 spThree = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width - 30 - enemy.Width, ScreenManager.GraphicsDevice.Viewport.Y + 30); // upper right
                 spFour = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width - 30 - enemy.Width, ScreenManager.GraphicsDevice.Viewport.Height - 30 - enemy.Height); // lower right
 
-                /*
-                rectOne = new Rectangle(Convert.ToInt32(spOne.X), Convert.ToInt32(spOne.Y), enemy.Width, enemy.Height);
-                rectTwo = new Rectangle(Convert.ToInt32(spTwo.X), Convert.ToInt32(spTwo.Y), enemy.Width, enemy.Height);
-                rectThree = new Rectangle(Convert.ToInt32(spThree.X), Convert.ToInt32(spThree.Y), enemy.Width, enemy.Height);
-                rectFour = new Rectangle(Convert.ToInt32(spFour.X), Convert.ToInt32(spFour.Y), enemy.Width, enemy.Height);
-
-                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width/2 - player.Width/2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height/2);
-                playerRect = new Rectangle(ScreenManager.GraphicsDevice.Viewport.Width / 2 - player.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height / 2, player.Width, player.Height); // player spawn
-                
-                enemyRect = new Rectangle[4];
-                enemyRect[0] = rectOne;
-                enemyRect[1] = rectTwo;
-                enemyRect[2] = rectThree;
-                enemyRect[3] = rectFour;
-                */
-
                 rectOne = new RectangleF(spOne.X, spOne.Y, enemy.Width, enemy.Height);
                 rectTwo = new RectangleF(spTwo.X, spTwo.Y, enemy.Width, enemy.Height);
                 rectThree = new RectangleF(spThree.X, spThree.Y, enemy.Width, enemy.Height);
                 rectFour = new RectangleF(spFour.X, spFour.Y, enemy.Width, enemy.Height);
 
-                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - player.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height / 2);
-                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, player.Width, player.Height); // player spawn
-
-                enemyRect = new RectangleF[4];
                 enemyRect[0] = rectOne;
                 enemyRect[1] = rectTwo;
                 enemyRect[2] = rectThree;
                 enemyRect[3] = rectFour;
+                */
+                
+                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - player.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height / 2);
+                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, player.Width, player.Height); // player spawn
+
+                // How many enemies will there be
+                enemyRect = new RectangleF[20];
+
+                // Setup spawnpoint at the beginning of the game
+                Random rand = new Random();
+                int randomSpawn;
+                float numX, numY;
+
+                for (int i = 0; i < enemyRect.Length; i++)
+                {
+                    randomSpawn = rand.Next(0, 2);
+
+                    if (randomSpawn == 0)
+                    {
+                        do
+                        {
+                            numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                        } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
+
+                        numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                    }
+                    else
+                    {
+                        numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+
+                        do
+                        {
+                            numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                        } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
+                    }
+
+                    enemyRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
+                }
 
                 enemyMovementArray = new Vector2[enemyRect.Length];
 
-                enemySpeed = 20f;
+                playerSpeed = 10f;
+                enemySpeed = 15f;
 
                 timer = 0;
 
                 bulletLevelQuarter = 0;
 
-                // A real game would probably have more content than this sample, so
-                // it would take longer to load. We simulate that by delaying for a
-                // while, giving you a chance to admire the beautiful loading screen.
-                Thread.Sleep(1000);
+                snakeSpawn = false;
+
+                centerX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - enemy.Width / 2;
+                centerY = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
+                radius = 100;
+                speed = 6;
+                speedScale = ((0.001 * 2 * Math.PI) / speed);
+                circlePosition = new Vector2();
 
                 // once the load has finished, we use ResetElapsedTime to tell the game's
                 // timing mechanism that we have just finished a very long frame, and that
@@ -217,15 +251,53 @@ namespace GameStateManagementSample
                 {
                     timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+                    TestSnake();
+
                     // Bullet level
-                    BulletLevel();
+                    //BulletLevel();
+
+                    angle = (float)gameTime.TotalGameTime.TotalSeconds;
+                    xCoord = (float)(centerX + Math.Sin(angle) * radius);
+                    yCoord = (float)(centerY + Math.Cos(angle) * radius);
+                    circlePosition = new Vector2(xCoord, yCoord);
                 }
             }
         }
 
+        public void TestSnake()
+        {
+            if (snakeSpawn == false)
+            {
+                for (int i = 0; i < enemyRect.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        enemyRect[i].X = 0;
+                        enemyRect[i].Y = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
+                    }
+                    else
+                    {
+                        enemyRect[i].X = enemyRect[i - 1].X - 100;
+                        enemyRect[i].Y = enemyRect[i - 1].Y - 100;
+                    }
+                }
+
+                snakeSpawn = true;
+            }
+
+            for (int i = enemyRect.Length - 1; i > 0; i--)
+            {
+                enemyRect[i].X = enemyRect[i - 1].X;
+                enemyRect[i].Y = enemyRect[i - 1].Y;
+            }
+
+            enemyRect[0].X += 0.5f * enemySpeed;
+            enemyRect[0].Y += (float)Math.Cos(enemyRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
+        }
+
         public void BulletLevel()
         {
-            if (bulletLevelQuarter < 4)
+            if (bulletLevelQuarter < enemyRect.Length)
             {
                 if (timer >= bulletLevelQuarter * 3) // Spawn new enemy every 3 seconds
                 {
@@ -300,13 +372,6 @@ namespace GameStateManagementSample
             return movement;
         }
 
-        public Vector2 GetVector2(Rectangle tempRect)
-        {
-            Vector2 vectOfRect = new Vector2(tempRect.X, tempRect.Y);
-
-            return vectOfRect;
-        }
-
         /// <summary>
         /// Lets the game respond to player input. Unlike the Update method,
         /// this will only be called when the gameplay screen is active.
@@ -372,19 +437,18 @@ namespace GameStateManagementSample
                     movement.Normalize();
 
                 // Prevent player from moving off screen
-                Vector2 boundary = playerPosition + movement * 8f;
+                Vector2 boundary = playerPosition + movement * playerSpeed;
 
                 if (boundary.X >= 0 && boundary.X <= ScreenManager.GraphicsDevice.Viewport.Width)
                 {
                     if (boundary.Y >= 0 && boundary.Y <= ScreenManager.GraphicsDevice.Viewport.Height)
                     {
-                        playerRect.X += movement.X * 8f;
-                        playerRect.Y += movement.Y * 8f;
+                        playerRect.X += movement.X * playerSpeed;
+                        playerRect.Y += movement.Y * playerSpeed;
                     }
                 }
             }
         }
-
 
         /// <summary>
         /// Draws the gameplay screen.
@@ -408,6 +472,8 @@ namespace GameStateManagementSample
             }
 
             spriteBatch.Draw(player, playerRect.Position, Color.White);
+
+            spriteBatch.Draw(enemy, circlePosition, Color.Black);
 
             spriteBatch.End();
 

@@ -53,7 +53,7 @@ namespace GameStateManagementSample
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
             Components.Add(screenManager);
-
+            Components.Add(new FrameRateCounter(this));
 #if WINDOWS_PHONE
             // Hook events on the PhoneApplicationService so we're notified of the application's life cycle
             Microsoft.Phone.Shell.PhoneApplicationService.Current.Launching += 
