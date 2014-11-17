@@ -47,6 +47,7 @@ namespace GameStateManagementSample
 
         // Test level
         bool snakeSpawn;
+        bool snakeExplode;
         float centerX, centerY, radius, speed, angle, xCoord, yCoord, speedScale;
         RectangleF[] circlePosition;
 
@@ -54,7 +55,7 @@ namespace GameStateManagementSample
         int bulletLevelQuarter;
 
         Texture2D enemy;
-        Texture2D player;
+        Texture2D playerTex;
 
         #endregion
 
@@ -99,7 +100,7 @@ namespace GameStateManagementSample
 
                 // TESTING (cubes are 48 x 48)
                 enemy = content.Load<Texture2D>("blackCube");
-                player = content.Load<Texture2D>("whiteCube");
+                playerTex = content.Load<Texture2D>("whiteCube");
 
                 /*
                 // spawn points
@@ -119,17 +120,23 @@ namespace GameStateManagementSample
                 enemyRect[3] = rectFour;
                 */
                 
-                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - player.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - player.Height / 2);
-                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, player.Width, player.Height); // player spawn
+                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - playerTex.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - playerTex.Height / 2);
+                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
 
                 // How many enemies will there be
                 enemyRect = new RectangleF[20];
+
+                for (int i = 0; i < enemyRect.Length; i++)
+                {
+                    enemyRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+                }
 
                 // Setup spawnpoint at the beginning of the game
                 Random rand = new Random();
                 int randomSpawn;
                 float numX, numY;
 
+                /*
                 for (int i = 0; i < enemyRect.Length; i++)
                 {
                     randomSpawn = rand.Next(0, 2);
@@ -155,6 +162,7 @@ namespace GameStateManagementSample
 
                     enemyRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
                 }
+                 */
 
                 enemyMovementArray = new Vector2[enemyRect.Length];
 
@@ -166,6 +174,7 @@ namespace GameStateManagementSample
                 bulletLevelQuarter = 0;
 
                 snakeSpawn = false;
+                snakeExplode = false;
 
                 centerX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - enemy.Width / 2;
                 centerY = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
@@ -254,78 +263,157 @@ namespace GameStateManagementSample
                 {
                     timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                    TestSnake();
+                    // Snake movement - will not work with bullet yet
+                    SnakeMovement();
 
-                    // Bullet level
+                    // Bullet entry - will not work with snake movement
                     //BulletLevel();
 
+                    // circular blade movement
                     angle = (float)gameTime.TotalGameTime.TotalSeconds;
-
-                    for (int i = 0; i < circlePosition.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                xCoord = (float)(centerX + Math.Sin(angle) * radius);
-                                yCoord = (float)(centerY + Math.Cos(angle) * radius);
-                                break;
-                            case 1:
-                                xCoord = (float)(centerX + Math.Sin(angle - 1.5f) * radius);
-                                yCoord = (float)(centerY + Math.Cos(angle - 1.5f) * radius);
-                                break;
-                            case 2:
-                                xCoord = (float)(centerX + Math.Sin(angle - 3.0f) * radius);
-                                yCoord = (float)(centerY + Math.Cos(angle - 3.0f) * radius);
-                                break;
-                            case 3:
-                                xCoord = (float)(centerX + Math.Sin(angle - 4.5f) * radius);
-                                yCoord = (float)(centerY + Math.Cos(angle - 4.5f) * radius);
-                                break;
-                        }
-
-                        circlePosition[i].X = xCoord;
-                        circlePosition[i].Y = yCoord;
-                    }
-
-                    centerX += 1;
+                    CircularBlade(angle);
                 }
             }
         }
 
-        public void TestSnake()
+        public void CircularBlade(float angle)
         {
-            if (snakeSpawn == false)
+            for (int i = 0; i < circlePosition.Length; i++)
             {
+                switch (i)
+                {
+                    case 0:
+                        xCoord = (float)(centerX + Math.Sin(angle) * radius);
+                        yCoord = (float)(centerY + Math.Cos(angle) * radius);
+                        break;
+                    case 1:
+                        xCoord = (float)(centerX + Math.Sin(angle - 1.5f) * radius);
+                        yCoord = (float)(centerY + Math.Cos(angle - 1.5f) * radius);
+                        break;
+                    case 2:
+                        xCoord = (float)(centerX + Math.Sin(angle - 3.0f) * radius);
+                        yCoord = (float)(centerY + Math.Cos(angle - 3.0f) * radius);
+                        break;
+                    case 3:
+                        xCoord = (float)(centerX + Math.Sin(angle - 4.5f) * radius);
+                        yCoord = (float)(centerY + Math.Cos(angle - 4.5f) * radius);
+                        break;
+                }
+
+                circlePosition[i].X = xCoord;
+                circlePosition[i].Y = yCoord;
+            }
+
+            centerX += 1;
+        }
+
+        public void SnakeMovement()
+        {
+                // Move like snake when entering
+            if (snakeExplode == false)
+            {
+                #region Snake Beginning
+                if (snakeSpawn == false)
+                {
+                    // setup the snake
+                    for (int i = 0; i < enemyRect.Length; i++)
+                    {
+                        if (i == 0)
+                        {
+                            enemyRect[i].X = 0;
+                            enemyRect[i].Y = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
+                        }
+                        else
+                        {
+                            enemyRect[i].X = enemyRect[i - 1].X - 100;
+                            enemyRect[i].Y = enemyRect[i - 1].Y - 100;
+                        }
+                    }
+
+                    snakeSpawn = true;
+                }
+
+                for (int i = enemyRect.Length - 1; i > 0; i--)
+                {
+                    enemyRect[i].X = enemyRect[i - 1].X;
+                    enemyRect[i].Y = enemyRect[i - 1].Y;
+
+                    if (enemyRect[enemyRect.Length - 1].X >= ScreenManager.GraphicsDevice.Viewport.Width)
+                    {
+                        snakeSpawn = false;
+                    }
+                }
+
+                enemyRect[0].X += 0.5f * enemySpeed;
+                enemyRect[0].Y += (float)Math.Cos(enemyRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
+
+                // Explode when snake reaches edge of screen
+                if (enemyRect[0].Right >= ScreenManager.GraphicsDevice.Viewport.Width)
+                {
+                    snakeExplode = true;
+
+                    Random rand = new Random();
+                    for (int i = 0; i < enemyRect.Length; i++)
+                    {
+                        do{
+                            enemyMovementArray[i].X = (float)rand.NextDouble();
+                        } while(enemyMovementArray[i].X < 0.4f);
+
+                        enemyMovementArray[i].X *= -1;
+                        enemyMovementArray[i].X *= enemySpeed;
+
+                        float randomY;
+                        do
+                        {
+                            randomY = rand.Next(-1, 2);
+                        } while (randomY == 0);
+
+                        enemyMovementArray[i].Y = (float)rand.NextDouble() * randomY * enemySpeed;
+                    }
+                }
+                #endregion
+            }
+                // Explode when reached one edge
+            else
+            {
+                #region Snake Explosion
                 for (int i = 0; i < enemyRect.Length; i++)
                 {
-                    if (i == 0)
+                    enemyRect[i].X += enemyMovementArray[i].X;
+                    enemyRect[i].Y += enemyMovementArray[i].Y;
+
+                    if (enemyRect[i].Top <= ScreenManager.GraphicsDevice.Viewport.Y)
                     {
-                        enemyRect[i].X = 0;
-                        enemyRect[i].Y = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
+                        enemyMovementArray[i].Y = Math.Abs(enemyMovementArray[i].Y);
                     }
-                    else
+                    else if (enemyRect[i].Bottom >= ScreenManager.GraphicsDevice.Viewport.Height - enemy.Height)
                     {
-                        enemyRect[i].X = enemyRect[i - 1].X - 100;
-                        enemyRect[i].Y = enemyRect[i - 1].Y - 100;
+                        enemyMovementArray[i].Y = Math.Abs(enemyMovementArray[i].Y) * -1;
+                    }
+
+                    if(enemyRect[i].Right <= ScreenManager.GraphicsDevice.Viewport.X)
+                    {
+                        enemyMovementArray[i].X = 0;
+                        enemyMovementArray[i].Y = 0;
                     }
                 }
 
-                snakeSpawn = true;
-            }
-
-            for (int i = enemyRect.Length - 1; i > 0; i--)
-            {
-                enemyRect[i].X = enemyRect[i - 1].X;
-                enemyRect[i].Y = enemyRect[i - 1].Y;
-
-                if (enemyRect[enemyRect.Length - 1].X >= ScreenManager.GraphicsDevice.Viewport.Width)
+                Vector2 stoppedCube = new Vector2(0,0);
+                int allCubeStopped = 0;
+                for (int i = 0; i < enemyRect.Length; i++)
                 {
-                    snakeSpawn = false;
+                    if (enemyMovementArray[i].Equals(stoppedCube))
+                    {
+                        allCubeStopped++;
+                    }
                 }
-            }
 
-            enemyRect[0].X += 0.5f * enemySpeed;
-            enemyRect[0].Y += (float)Math.Cos(enemyRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
+                if (allCubeStopped == enemyRect.Length)
+                {
+                    snakeExplode = false;
+                }
+                #endregion
+            }
         }
 
         #region Bullet Level
@@ -473,11 +561,11 @@ namespace GameStateManagementSample
                     movement.Normalize();
 
                 // Prevent player from moving off screen
-                Vector2 boundary = playerPosition + movement * playerSpeed;
+                Vector2 boundary = playerRect.Position + movement * playerSpeed;
 
-                if (boundary.X >= 0 && boundary.X <= ScreenManager.GraphicsDevice.Viewport.Width)
+                if (boundary.X >= 0 && boundary.X <= ScreenManager.GraphicsDevice.Viewport.Width - playerTex.Width)
                 {
-                    if (boundary.Y >= 0 && boundary.Y <= ScreenManager.GraphicsDevice.Viewport.Height)
+                    if (boundary.Y >= 0 && boundary.Y <= ScreenManager.GraphicsDevice.Viewport.Height - playerTex.Height)
                     {
                         playerRect.X += movement.X * playerSpeed;
                         playerRect.Y += movement.Y * playerSpeed;
@@ -507,7 +595,7 @@ namespace GameStateManagementSample
                 spriteBatch.Draw(enemy, enemyStartSpawn, Color.Red);
             }
 
-            spriteBatch.Draw(player, playerRect.Position, Color.White);
+            spriteBatch.Draw(playerTex, playerRect.Position, Color.White);
 
             /*
             for (int i = 0; i < circlePosition.Length; i++)

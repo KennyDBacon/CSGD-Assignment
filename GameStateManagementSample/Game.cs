@@ -33,7 +33,7 @@ namespace GameStateManagementSample
             Content.RootDirectory = "Content";
 
             graphics = new GraphicsDeviceManager(this);
-            TargetElapsedTime = TimeSpan.FromTicks(333333);
+            //TargetElapsedTime = TimeSpan.FromTicks(333333);
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
