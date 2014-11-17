@@ -40,8 +40,8 @@ namespace GameStateManagementSample
         RectangleF playerRect;
         Vector2 playerPosition;
 
-        RectangleF[] enemyRect;
-        Vector2[] enemyMovementArray;
+        RectangleF[] snakeRect;
+        Vector2[] snakeMovementArray;
         float enemySpeed;
         float playerSpeed;
 
@@ -124,11 +124,11 @@ namespace GameStateManagementSample
                 playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
 
                 // How many enemies will there be
-                enemyRect = new RectangleF[20];
+                snakeRect = new RectangleF[10];
 
-                for (int i = 0; i < enemyRect.Length; i++)
+                for (int i = 0; i < snakeRect.Length; i++)
                 {
-                    enemyRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+                    snakeRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
                 }
 
                 // Setup spawnpoint at the beginning of the game
@@ -164,7 +164,7 @@ namespace GameStateManagementSample
                 }
                  */
 
-                enemyMovementArray = new Vector2[enemyRect.Length];
+                snakeMovementArray = new Vector2[snakeRect.Length];
 
                 playerSpeed = 10f;
                 enemySpeed = 15f;
@@ -176,6 +176,7 @@ namespace GameStateManagementSample
                 snakeSpawn = false;
                 snakeExplode = false;
 
+                // Setup circular blade position
                 centerX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - enemy.Width / 2;
                 centerY = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
                 radius = 100;
@@ -316,51 +317,53 @@ namespace GameStateManagementSample
                 if (snakeSpawn == false)
                 {
                     // setup the snake
-                    for (int i = 0; i < enemyRect.Length; i++)
+                    for (int i = 0; i < snakeRect.Length; i++)
                     {
                         if (i == 0)
                         {
-                            enemyRect[i].X = 0;
-                            enemyRect[i].Y = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
+                            snakeRect[i].X = 0;
+                            snakeRect[i].Y = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
                         }
                         else
                         {
-                            enemyRect[i].X = enemyRect[i - 1].X - 100;
-                            enemyRect[i].Y = enemyRect[i - 1].Y - 100;
+                            snakeRect[i].X = snakeRect[i - 1].X - 100;
+                            snakeRect[i].Y = snakeRect[i - 1].Y - 100;
                         }
                     }
 
                     snakeSpawn = true;
                 }
 
-                for (int i = enemyRect.Length - 1; i > 0; i--)
-                {
-                    enemyRect[i].X = enemyRect[i - 1].X;
-                    enemyRect[i].Y = enemyRect[i - 1].Y;
 
+                for (int i = snakeRect.Length - 1; i > 0; i--)
+                {
+                    snakeRect[i].X = snakeRect[i - 1].X;
+                    snakeRect[i].Y = snakeRect[i - 1].Y;
+
+                    /*
                     if (enemyRect[enemyRect.Length - 1].X >= ScreenManager.GraphicsDevice.Viewport.Width)
                     {
                         snakeSpawn = false;
-                    }
+                    }*/
                 }
 
-                enemyRect[0].X += 0.5f * enemySpeed;
-                enemyRect[0].Y += (float)Math.Cos(enemyRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
+                snakeRect[0].X += 0.5f * enemySpeed;
+                snakeRect[0].Y += (float)Math.Cos(snakeRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
 
                 // Explode when snake reaches edge of screen
-                if (enemyRect[0].Right >= ScreenManager.GraphicsDevice.Viewport.Width)
+                if (snakeRect[0].Right >= ScreenManager.GraphicsDevice.Viewport.Width)
                 {
                     snakeExplode = true;
 
                     Random rand = new Random();
-                    for (int i = 0; i < enemyRect.Length; i++)
+                    for (int i = 0; i < snakeRect.Length; i++)
                     {
                         do{
-                            enemyMovementArray[i].X = (float)rand.NextDouble();
-                        } while(enemyMovementArray[i].X < 0.4f);
+                            snakeMovementArray[i].X = (float)rand.NextDouble();
+                        } while(snakeMovementArray[i].X < 0.4f);
 
-                        enemyMovementArray[i].X *= -1;
-                        enemyMovementArray[i].X *= enemySpeed;
+                        snakeMovementArray[i].X *= -1;
+                        snakeMovementArray[i].X *= enemySpeed;
 
                         float randomY;
                         do
@@ -368,7 +371,7 @@ namespace GameStateManagementSample
                             randomY = rand.Next(-1, 2);
                         } while (randomY == 0);
 
-                        enemyMovementArray[i].Y = (float)rand.NextDouble() * randomY * enemySpeed;
+                        snakeMovementArray[i].Y = (float)rand.NextDouble() * randomY * enemySpeed;
                     }
                 }
                 #endregion
@@ -377,40 +380,41 @@ namespace GameStateManagementSample
             else
             {
                 #region Snake Explosion
-                for (int i = 0; i < enemyRect.Length; i++)
+                for (int i = 0; i < snakeRect.Length; i++)
                 {
-                    enemyRect[i].X += enemyMovementArray[i].X;
-                    enemyRect[i].Y += enemyMovementArray[i].Y;
+                    snakeRect[i].X += snakeMovementArray[i].X;
+                    snakeRect[i].Y += snakeMovementArray[i].Y;
 
-                    if (enemyRect[i].Top <= ScreenManager.GraphicsDevice.Viewport.Y)
+                    if (snakeRect[i].Top <= ScreenManager.GraphicsDevice.Viewport.Y)
                     {
-                        enemyMovementArray[i].Y = Math.Abs(enemyMovementArray[i].Y);
+                        snakeMovementArray[i].Y = Math.Abs(snakeMovementArray[i].Y);
                     }
-                    else if (enemyRect[i].Bottom >= ScreenManager.GraphicsDevice.Viewport.Height - enemy.Height)
+                    else if (snakeRect[i].Bottom >= ScreenManager.GraphicsDevice.Viewport.Height - enemy.Height)
                     {
-                        enemyMovementArray[i].Y = Math.Abs(enemyMovementArray[i].Y) * -1;
+                        snakeMovementArray[i].Y = Math.Abs(snakeMovementArray[i].Y) * -1;
                     }
 
-                    if(enemyRect[i].Right <= ScreenManager.GraphicsDevice.Viewport.X)
+                    if (snakeRect[i].Right <= ScreenManager.GraphicsDevice.Viewport.X)
                     {
-                        enemyMovementArray[i].X = 0;
-                        enemyMovementArray[i].Y = 0;
+                        snakeMovementArray[i].X = 0;
+                        snakeMovementArray[i].Y = 0;
                     }
                 }
 
                 Vector2 stoppedCube = new Vector2(0,0);
                 int allCubeStopped = 0;
-                for (int i = 0; i < enemyRect.Length; i++)
+                for (int i = 0; i < snakeRect.Length; i++)
                 {
-                    if (enemyMovementArray[i].Equals(stoppedCube))
+                    if (snakeMovementArray[i].Equals(stoppedCube))
                     {
                         allCubeStopped++;
                     }
                 }
 
-                if (allCubeStopped == enemyRect.Length)
+                if (allCubeStopped == snakeRect.Length)
                 {
                     snakeExplode = false;
+                    snakeSpawn = false;
                 }
                 #endregion
             }
@@ -589,9 +593,9 @@ namespace GameStateManagementSample
             spriteBatch.Begin();
 
             //spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
-            for(int i = 0; i < enemyRect.Length; i++)
+            for (int i = 0; i < snakeRect.Length; i++)
             {
-                Vector2 enemyStartSpawn = enemyRect[i].Position;
+                Vector2 enemyStartSpawn = snakeRect[i].Position;
                 spriteBatch.Draw(enemy, enemyStartSpawn, Color.Red);
             }
 
