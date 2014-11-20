@@ -106,6 +106,34 @@ namespace GameStateManagement
             set { pauseGame = value; }
         }
 
+        bool resetGame = false;
+        public bool ResetGame
+        {
+            get { return resetGame; }
+            set { resetGame = value; }
+        }
+
+        bool bulletEnabled = true;
+        public bool BulletEnabled
+        {
+            get { return bulletEnabled; }
+            set { bulletEnabled = value; }
+        }
+
+        bool snakeEnabled = false;
+        public bool SnakeEnabled
+        {
+            get { return snakeEnabled; }
+            set { snakeEnabled = value; }
+        }
+
+        bool bladeEnabled = false;
+        public bool BladeEnabled
+        {
+            get { return bladeEnabled; }
+            set { bladeEnabled = value; }
+        }
+
         #endregion
 
         #region Initialization

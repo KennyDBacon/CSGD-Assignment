@@ -72,14 +72,14 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
-    <Compile Include="Screens\ModeStartPauseScreen.cs" />
+    <Compile Include="Screens\GamePauseScreen.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuEntry.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\MessageBoxScreen.cs" />
-    <Compile Include="Screens\OptionsMenuScreen.cs" />
+    <Compile Include="Screens\DifficultyMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
   </ItemGroup>

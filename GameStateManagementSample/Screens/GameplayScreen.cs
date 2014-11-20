@@ -64,6 +64,8 @@ namespace GameStateManagementSample
         float circMoveX;
         float circMoveY;
 
+        bool playerCollide;
+
         #endregion
 
         #region Initialization
@@ -108,82 +110,8 @@ namespace GameStateManagementSample
                 // TESTING (cubes are 48 x 48)
                 enemy = content.Load<Texture2D>("blackCube");
                 playerTex = content.Load<Texture2D>("whiteCube");
-                
-                playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - playerTex.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - playerTex.Height / 2);
-                playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
 
-                // How many enemies will there be
-                snakeRect = new RectangleF[10];
-                bulletRect = new RectangleF[10];
-
-                for (int i = 0; i < snakeRect.Length; i++)
-                {
-                    snakeRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
-                }
-
-                // Setup spawnpoint at the beginning of the game
-                Random rand = new Random();
-                int randomSpawn;
-                float numX, numY;
-
-                for (int i = 0; i < bulletRect.Length; i++)
-                {
-                    randomSpawn = rand.Next(0, 2);
-
-                    if (randomSpawn == 0)
-                    {
-                        do
-                        {
-                            numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
-                        } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
-
-                        numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
-                    }
-                    else
-                    {
-                        numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
-
-                        do
-                        {
-                            numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
-                        } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
-                    }
-
-                    bulletRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
-                }
-
-                snakeMovementArray = new Vector2[snakeRect.Length];
-                bulletMovementArray = new Vector2[bulletRect.Length];
-
-                playerSpeed = 10f;
-                enemySpeed = 15f;
-
-                timer = 0;
-
-                bulletLevelQuarter = 0;
-
-                snakeSpawn = false;
-                snakeExplode = false;
-
-                // Setup circular blade position
-                centerX = ScreenManager.GraphicsDevice.Viewport.Width / 2 - enemy.Width / 2;
-                centerY = ScreenManager.GraphicsDevice.Viewport.Height / 2 - enemy.Height / 2;
-                radius = 100;
-                speed = 60;
-                speedScale = (float)((0.001 * 2 * Math.PI) / speed);
-                circlePosition = new RectangleF[4];
-                for (int i = 0; i < circlePosition.Length; i++)
-                {
-                    circlePosition[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
-                }
-
-                circMoveX = 5;
-                circMoveY = 5;
-
-                // once the load has finished, we use ResetElapsedTime to tell the game's
-                // timing mechanism that we have just finished a very long frame, and that
-                // it should not try to catch up.
-                ScreenManager.Game.ResetElapsedTime();
+                SetupGame();
             }
 
 #if WINDOWS_PHONE
@@ -248,23 +176,26 @@ namespace GameStateManagementSample
             if (ScreenManager.StartGame == false && ScreenManager.PauseGame == true)
             {
                 ScreenManager.PauseGame = false;
-                ScreenManager.AddScreen(new ModeStartPauseScreen(), PlayerIndex.One);
+                ScreenManager.AddScreen(new GamePauseScreen("Are you ready?"), PlayerIndex.One);
             }
             else
             {
                 if (IsActive)
                 {
-                    timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if (playerCollide == false)
+                    {
+                        timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                    // Snake movement - will not work with bullet yet
-                    SnakeMovement();
+                        // Snake movement - will not work with bullet yet
+                        SnakeMovement();
 
-                    // Bullet entry - will not work with snake movement
-                    BulletLevel();
+                        // Bullet entry - will not work with snake movement
+                        BulletLevel();
 
-                    // circular blade movement
-                    angle = (float)gameTime.TotalGameTime.TotalSeconds;
-                    CircularBlade(angle);
+                        // circular blade movement
+                        angle = (float)gameTime.TotalGameTime.TotalSeconds;
+                        CircularBlade(angle);
+                    }
                 }
             }
         }
@@ -296,6 +227,8 @@ namespace GameStateManagementSample
 
                 circlePosition[i].X = xCoord;
                 circlePosition[i].Y = yCoord;
+
+                CheckCollision(circlePosition[i]);
 
                 if (circlePosition[i].Left <= ScreenManager.GraphicsDevice.Viewport.X)
                 {
@@ -351,15 +284,13 @@ namespace GameStateManagementSample
                     snakeRect[i].X = snakeRect[i - 1].X;
                     snakeRect[i].Y = snakeRect[i - 1].Y;
 
-                    /*
-                    if (enemyRect[enemyRect.Length - 1].X >= ScreenManager.GraphicsDevice.Viewport.Width)
-                    {
-                        snakeSpawn = false;
-                    }*/
+                    CheckCollision(snakeRect[i]);
                 }
 
                 snakeRect[0].X += 0.5f * enemySpeed;
                 snakeRect[0].Y += (float)Math.Cos(snakeRect[0].X / 40) * 20; // divide by x to make the Y-motion smoother, multiply cos will make Y position higher
+
+                CheckCollision(snakeRect[0]);
 
                 // Explode when snake reaches edge of screen
                 if (snakeRect[0].Right >= ScreenManager.GraphicsDevice.Viewport.Width)
@@ -395,6 +326,8 @@ namespace GameStateManagementSample
                 {
                     snakeRect[i].X += snakeMovementArray[i].X;
                     snakeRect[i].Y += snakeMovementArray[i].Y;
+
+                    CheckCollision(snakeRect[i]);
 
                     if (snakeRect[i].Top <= ScreenManager.GraphicsDevice.Viewport.Y)
                     {
@@ -451,10 +384,12 @@ namespace GameStateManagementSample
                 bulletRect[index].X += bulletMovementArray[index].X;
                 bulletRect[index].Y += bulletMovementArray[index].Y;
 
-                if (bulletRect[index].Left > ScreenManager.GraphicsDevice.Viewport.Width + 70 ||
-                    bulletRect[index].Right < ScreenManager.GraphicsDevice.Viewport.X - 70 ||
-                    bulletRect[index].Top > ScreenManager.GraphicsDevice.Viewport.Height + 70 ||
-                    bulletRect[index].Bottom < ScreenManager.GraphicsDevice.Viewport.Y - 70)
+                CheckCollision(bulletRect[index]);
+
+                if (bulletRect[index].Left > ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 70 ||
+                    bulletRect[index].Right < ScreenManager.GraphicsDevice.Viewport.X - enemy.Width - 70 ||
+                    bulletRect[index].Top > ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 70 ||
+                    bulletRect[index].Bottom < ScreenManager.GraphicsDevice.Viewport.Y - enemy.Height - 70)
                 {
                     // Moving right
                     BulletSpawnPoint(index);
@@ -474,18 +409,18 @@ namespace GameStateManagementSample
             {
                 do
                 {
-                    numX = rand.Next(-enemy.Width - 50, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                    numX = rand.Next(-enemy.Width - 30, ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 30);
                 } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
 
-                numY = rand.Next(-enemy.Height - 50, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                numY = rand.Next(-enemy.Height - 30, ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 30);
             }
             else
             {
-                numX = rand.Next(-enemy.Width - 50, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                numX = rand.Next(-enemy.Width - 30, ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 30);
 
                 do
                 {
-                    numY = rand.Next(-enemy.Height - 50, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                    numY = rand.Next(-enemy.Height - 30, ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 30);
                 } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
             }
 
@@ -498,18 +433,111 @@ namespace GameStateManagementSample
         }
         #endregion
 
-        // not used for now
-        public Vector2 EnemyMovement(int index)
+        public void CheckCollision(RectangleF tempRect)
         {
-            Vector2 movement = new Vector2(0, 0);
+            // Game end
+            if(tempRect.Left <= playerRect.Right)
+                if(tempRect.Right >= playerRect.Left)
+                    if (tempRect.Top <= playerRect.Bottom)
+                        if (tempRect.Bottom >= playerRect.Top)
+                        {
+                            playerCollide = true;
+                            ScreenManager.ResetGame = true;
 
-            movement.X = playerPosition.X - bulletRect[index].X;
-            movement.Y = playerPosition.Y - bulletRect[index].Y;
+                            float vibrationLevel = 0.5f;
+                            GamePad.SetVibration(PlayerIndex.One, vibrationLevel, vibrationLevel);
 
-            movement.Normalize();
-            movement *= 10f;
+                            Thread.Sleep(1000);
 
-            return movement;
+                            GamePad.SetVibration(PlayerIndex.One, 0, 0);
+
+                            ExitScreen();
+                            ScreenManager.AddScreen(new GamePauseScreen("Try again?"), PlayerIndex.One);
+                        }
+        }
+
+        //
+        // Setup the game whenever it starts or reset
+        //
+        public void SetupGame()
+        {
+            playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - playerTex.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - playerTex.Height / 2);
+            playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
+
+            // How many enemies will there be
+            snakeRect = new RectangleF[10];
+            bulletRect = new RectangleF[10];
+
+            for (int i = 0; i < snakeRect.Length; i++)
+            {
+                snakeRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+            }
+
+            // Setup spawnpoint at the beginning of the game
+            Random rand = new Random();
+            int randomSpawn;
+            float numX, numY;
+
+            for (int i = 0; i < bulletRect.Length; i++)
+            {
+                randomSpawn = rand.Next(0, 2);
+
+                if (randomSpawn == 0)
+                {
+                    do
+                    {
+                        numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                    } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
+
+                    numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                }
+                else
+                {
+                    numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+
+                    do
+                    {
+                        numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                    } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
+                }
+
+                bulletRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
+            }
+
+            snakeMovementArray = new Vector2[snakeRect.Length];
+            bulletMovementArray = new Vector2[bulletRect.Length];
+
+            playerSpeed = 10f;
+            enemySpeed = 15f;
+
+            timer = 0;
+
+            bulletLevelQuarter = 0;
+
+            snakeSpawn = false;
+            snakeExplode = false;
+
+            // Setup circular blade position
+            centerX = -100;
+            centerY = -100;
+            radius = 100;
+            speed = 60;
+            speedScale = (float)((0.001 * 2 * Math.PI) / speed);
+            circlePosition = new RectangleF[4];
+            for (int i = 0; i < circlePosition.Length; i++)
+            {
+                circlePosition[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+            }
+
+            circMoveX = 5;
+            circMoveY = 5;
+
+            playerCollide = false;
+
+            // once the load has finished, we use ResetElapsedTime to tell the game's
+            // timing mechanism that we have just finished a very long frame, and that
+            // it should not try to catch up.
+            ScreenManager.Game.ResetElapsedTime();
         }
 
         /// <summary>
@@ -577,16 +605,26 @@ namespace GameStateManagementSample
                     movement.Normalize();
 
                 // Prevent player from moving off screen
-                Vector2 boundary = playerRect.Position + movement * playerSpeed;
-
-                if (boundary.X >= 0 && boundary.X <= ScreenManager.GraphicsDevice.Viewport.Width - playerTex.Width)
+                if (playerRect.X + (movement.X * playerSpeed) <= ScreenManager.GraphicsDevice.Viewport.X)
                 {
-                    if (boundary.Y >= 0 && boundary.Y <= ScreenManager.GraphicsDevice.Viewport.Height - playerTex.Height)
-                    {
-                        playerRect.X += movement.X * playerSpeed;
-                        playerRect.Y += movement.Y * playerSpeed;
-                    }
+                    movement.X = -playerRect.Left / playerSpeed;
                 }
+                else if(playerRect.X + (movement.X * playerSpeed) >= ScreenManager.GraphicsDevice.Viewport.Width - playerTex.Width)
+                {
+                    movement.X = (ScreenManager.GraphicsDevice.Viewport.Width - playerRect.Right) / playerSpeed;
+                }
+                
+                if (playerRect.Y + (movement.Y * playerSpeed) <= ScreenManager.GraphicsDevice.Viewport.Y)
+                {
+                    movement.Y = -playerRect.Top / playerSpeed;
+                }
+                else if (playerRect.Y + (movement.Y * playerSpeed) >= ScreenManager.GraphicsDevice.Viewport.Height - playerTex.Height)
+                {
+                    movement.Y = (ScreenManager.GraphicsDevice.Viewport.Height - playerRect.Bottom) / playerSpeed;
+                }
+
+                playerRect.X += movement.X * playerSpeed;
+                playerRect.Y += movement.Y * playerSpeed;
             }
         }
 

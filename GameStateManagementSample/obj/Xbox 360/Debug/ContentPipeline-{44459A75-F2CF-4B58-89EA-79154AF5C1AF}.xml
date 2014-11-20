@@ -7,7 +7,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\background.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\background.xnb</Output>
       <Time>2014-11-17T11:53:04.5067059+08:00</Time>
     </Item>
     <Item>
@@ -16,7 +16,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\blank.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\blank.xnb</Output>
       <Time>2014-11-17T11:53:04.5067059+08:00</Time>
     </Item>
     <Item>
@@ -25,7 +25,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\gradient.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\gradient.xnb</Output>
       <Time>2014-11-17T11:53:04.507706+08:00</Time>
     </Item>
     <Item>
@@ -34,7 +34,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\blackCube.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\blackCube.xnb</Output>
       <Time>2014-11-17T11:53:04.5067059+08:00</Time>
     </Item>
     <Item>
@@ -43,7 +43,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\whiteCube.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\whiteCube.xnb</Output>
       <Time>2014-11-17T11:53:04.5097061+08:00</Time>
     </Item>
     <Item>
@@ -52,7 +52,7 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\menufont.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\menufont.xnb</Output>
       <Time>2014-11-17T11:53:04.507706+08:00</Time>
     </Item>
     <Item>
@@ -61,7 +61,7 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\gamefont.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\gamefont.xnb</Output>
       <Time>2014-11-17T11:53:04.507706+08:00</Time>
     </Item>
     <Item>
@@ -70,20 +70,20 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\framerate.xnb</Output>
+      <Output>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\framerate.xnb</Output>
       <Time>2014-11-17T11:53:04.507706+08:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{44459A75-F2CF-4B58-89EA-79154AF5C1AF}</ContentProjectGUID>
-      <TargetPlatform>Windows</TargetPlatform>
-      <TargetProfile>Reach</TargetProfile>
+      <TargetPlatform>Xbox360</TargetPlatform>
+      <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
-      <CompressContent>false</CompressContent>
+      <CompressContent>true</CompressContent>
       <RootDirectory>C:\Users\Kenny\Desktop\New folder\Content\</RootDirectory>
       <LoggerRootDirectory>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\Content\</OutputDirectory>
+      <IntermediateDirectory>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\Xbox 360\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\Xbox 360\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
