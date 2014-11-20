@@ -61,17 +61,18 @@ namespace GameStateManagementSample
             MenuEntries.Add(back);
         }
 
-
-        /// <summary>
-        /// Fills in the latest values for the options screen menu text.
-        /// </summary>
         void SetMenuEntryText()
         {
-            bullet.Text = "Bullet: ";
-            snake.Text = "Snake: ";
-            blade.Text = "Circular Blade: ";
-        }
+            // default settings if player set everything to false
+            if (ScreenManager.BulletEnabled == false && ScreenManager.SnakeEnabled == false && ScreenManager.BladeEnabled == false)
+            {
+                ScreenManager.BulletEnabled = true;
+            }
 
+            bullet.Text = "Bullet: " + ScreenManager.BulletEnabled;
+            snake.Text = "Snake: " + ScreenManager.SnakeEnabled;
+            blade.Text = "Circular Blade: " + ScreenManager.BladeEnabled;
+        }
 
         #endregion
 
@@ -79,24 +80,21 @@ namespace GameStateManagementSample
 
         void BulletSelected(object sender, PlayerIndexEventArgs e)
         {
-            currentUngulate++;
-
-            if (currentUngulate > Ungulate.Llama)
-                currentUngulate = 0;
+            ScreenManager.BulletEnabled = !ScreenManager.BulletEnabled;
 
             SetMenuEntryText();
         }
 
         void SnakeSelected(object sender, PlayerIndexEventArgs e)
         {
-            currentLanguage = (currentLanguage + 1) % languages.Length;
+            ScreenManager.SnakeEnabled = !ScreenManager.SnakeEnabled;
 
             SetMenuEntryText();
         }
 
         void BladeSelected(object sender, PlayerIndexEventArgs e)
         {
-            frobnicate = !frobnicate;
+            ScreenManager.BladeEnabled = !ScreenManager.BladeEnabled;
 
             SetMenuEntryText();
         }

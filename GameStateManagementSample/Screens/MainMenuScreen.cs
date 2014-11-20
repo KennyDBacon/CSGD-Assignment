@@ -64,7 +64,7 @@ namespace GameStateManagementSample
         /// </summary>
         void DifficultyMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new DifficultyMenuScreen(), e.PlayerIndex);
         }
 
 
