@@ -1,0 +1,16 @@
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\background.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\blank.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\gradient.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\blackCube.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\whiteCube.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\menufont.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\gamefont.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\Content\framerate.xnb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\GameStateManagementSample.exe
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\GameStateManagementSample.pdb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\GameStateManagement.dll
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Release\GameStateManagement.pdb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\x86\Release\GameStateManagementSample (Windows).csprojResolveAssemblyReference.cache
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\x86\Release\GameStateManagementSample.exe
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\obj\x86\Release\GameStateManagementSample.pdb

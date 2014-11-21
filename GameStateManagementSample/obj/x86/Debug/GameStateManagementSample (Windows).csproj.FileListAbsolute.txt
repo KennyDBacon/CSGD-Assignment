@@ -61,3 +61,4 @@ C:\Users\Kenny\Documents\CSGD-Assignment\GameStateManagementSample\bin\x86\Debug
 C:\Users\Kenny\Documents\CSGD-Assignment\GameStateManagementSample\bin\x86\Debug\GameStateManagement.dll
 C:\Users\Kenny\Documents\CSGD-Assignment\GameStateManagementSample\bin\x86\Debug\GameStateManagement.pdb
 C:\Users\Kenny\Documents\CSGD-Assignment\GameStateManagementSample\obj\x86\Debug\GameStateManagementSample.pdb
+C:\Users\Kenny\Desktop\New folder\GameStateManagementSample\bin\x86\Debug\GameStateManagementSample.exe.config

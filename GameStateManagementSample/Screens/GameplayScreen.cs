@@ -30,6 +30,7 @@ namespace GameStateManagementSample
 
         ContentManager content;
         SpriteFont gameFont;
+        GameSettings gameSettings;
 
         Random random = new Random();
 
@@ -56,6 +57,8 @@ namespace GameStateManagementSample
         RectangleF[] circlePosition;
 
         float timer;
+        int timerInt;
+
         int bulletLevelQuarter;
 
         Texture2D enemy;
@@ -97,6 +100,7 @@ namespace GameStateManagementSample
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
                 gameFont = content.Load<SpriteFont>("gamefont");
+                gameSettings = new GameSettings();
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -123,6 +127,90 @@ namespace GameStateManagementSample
 #endif
         }
 
+        //
+        // Setup the game whenever it starts or reset
+        //
+        public void SetupGame()
+        {
+            playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - playerTex.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - playerTex.Height / 2);
+            playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
+
+            // How many enemies will there be
+            snakeRect = new RectangleF[10];
+            bulletRect = new RectangleF[gameSettings.Bullet];
+
+            for (int i = 0; i < snakeRect.Length; i++)
+            {
+                snakeRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+            }
+
+            // Setup spawnpoint at the beginning of the game
+            Random rand = new Random();
+            int randomSpawn;
+            float numX, numY;
+
+            for (int i = 0; i < bulletRect.Length; i++)
+            {
+                randomSpawn = rand.Next(0, 2);
+
+                if (randomSpawn == 0)
+                {
+                    do
+                    {
+                        numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+                    } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
+
+                    numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                }
+                else
+                {
+                    numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
+
+                    do
+                    {
+                        numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
+                    } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
+                }
+
+                bulletRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
+            }
+
+            snakeMovementArray = new Vector2[snakeRect.Length];
+            bulletMovementArray = new Vector2[bulletRect.Length];
+
+            playerSpeed = 10f;
+            enemySpeed = 8f;
+
+            timer = 0;
+            timerInt = 0;
+
+            bulletLevelQuarter = 0;
+
+            snakeSpawn = false;
+            snakeExplode = false;
+
+            // Setup circular blade position
+            centerX = -100;
+            centerY = -100;
+            radius = 100;
+            speed = 60;
+            speedScale = (float)((0.001 * 2 * Math.PI) / speed);
+            circlePosition = new RectangleF[4];
+            for (int i = 0; i < circlePosition.Length; i++)
+            {
+                circlePosition[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
+            }
+
+            circMoveX = 5;
+            circMoveY = 5;
+
+            playerCollide = false;
+
+            // once the load has finished, we use ResetElapsedTime to tell the game's
+            // timing mechanism that we have just finished a very long frame, and that
+            // it should not try to catch up.
+            ScreenManager.Game.ResetElapsedTime();
+        }
 
         public override void Deactivate()
         {
@@ -176,7 +264,7 @@ namespace GameStateManagementSample
             if (ScreenManager.StartGame == false && ScreenManager.PauseGame == true)
             {
                 ScreenManager.PauseGame = false;
-                ScreenManager.AddScreen(new GamePauseScreen("Are you ready?"), PlayerIndex.One);
+                ScreenManager.AddScreen(new GameStartScreen(), PlayerIndex.One);
             }
             else
             {
@@ -185,16 +273,30 @@ namespace GameStateManagementSample
                     if (playerCollide == false)
                     {
                         timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                        timerInt = (int)timer;
 
-                        // Snake movement - will not work with bullet yet
-                        SnakeMovement();
+                        // player wins
+                        if (timerInt >= 60)
+                        {
+                            ExitScreen();
+                            ScreenManager.AddScreen(new VictoryScreen(), PlayerIndex.One);
+                        }
 
-                        // Bullet entry - will not work with snake movement
+                        // Bullets
                         BulletLevel();
 
+                        // Snake movement
+                        if (gameSettings.Snake == true)
+                        {
+                            SnakeMovement();
+                        }
+
                         // circular blade movement
-                        angle = (float)gameTime.TotalGameTime.TotalSeconds;
-                        CircularBlade(angle);
+                        if (gameSettings.Blade == true)
+                        {
+                            angle = (float)gameTime.TotalGameTime.TotalSeconds;
+                            CircularBlade(angle);
+                        }
                     }
                 }
             }
@@ -367,7 +469,7 @@ namespace GameStateManagementSample
         #region Bullet Level
         public void BulletLevel()
         {
-            if (bulletLevelQuarter < bulletRect.Length)
+            if (bulletLevelQuarter < gameSettings.Bullet)
             {
                 if (timer >= bulletLevelQuarter * 3) // Spawn new enemy every 3 seconds
                 {
@@ -386,10 +488,10 @@ namespace GameStateManagementSample
 
                 CheckCollision(bulletRect[index]);
 
-                if (bulletRect[index].Left > ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 70 ||
-                    bulletRect[index].Right < ScreenManager.GraphicsDevice.Viewport.X - enemy.Width - 70 ||
-                    bulletRect[index].Top > ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 70 ||
-                    bulletRect[index].Bottom < ScreenManager.GraphicsDevice.Viewport.Y - enemy.Height - 70)
+                if (bulletRect[index].Right > ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 70 ||
+                    bulletRect[index].Left < ScreenManager.GraphicsDevice.Viewport.X - enemy.Width - 70 ||
+                    bulletRect[index].Bottom > ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 70 ||
+                    bulletRect[index].Top < ScreenManager.GraphicsDevice.Viewport.Y - enemy.Height - 70)
                 {
                     // Moving right
                     BulletSpawnPoint(index);
@@ -435,6 +537,7 @@ namespace GameStateManagementSample
 
         public void CheckCollision(RectangleF tempRect)
         {
+            /*
             // Game end
             if(tempRect.Left <= playerRect.Right)
                 if(tempRect.Right >= playerRect.Left)
@@ -452,92 +555,8 @@ namespace GameStateManagementSample
                             GamePad.SetVibration(PlayerIndex.One, 0, 0);
 
                             ExitScreen();
-                            ScreenManager.AddScreen(new GamePauseScreen("Try again?"), PlayerIndex.One);
-                        }
-        }
-
-        //
-        // Setup the game whenever it starts or reset
-        //
-        public void SetupGame()
-        {
-            playerPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - playerTex.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2 - playerTex.Height / 2);
-            playerRect = new RectangleF(playerPosition.X, playerPosition.Y, playerTex.Width, playerTex.Height); // player spawn
-
-            // How many enemies will there be
-            snakeRect = new RectangleF[10];
-            bulletRect = new RectangleF[10];
-
-            for (int i = 0; i < snakeRect.Length; i++)
-            {
-                snakeRect[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
-            }
-
-            // Setup spawnpoint at the beginning of the game
-            Random rand = new Random();
-            int randomSpawn;
-            float numX, numY;
-
-            for (int i = 0; i < bulletRect.Length; i++)
-            {
-                randomSpawn = rand.Next(0, 2);
-
-                if (randomSpawn == 0)
-                {
-                    do
-                    {
-                        numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
-                    } while (numX > -enemy.Width && numX < ScreenManager.GraphicsDevice.Viewport.Width);
-
-                    numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
-                }
-                else
-                {
-                    numX = rand.Next(-enemy.Width - 49, ScreenManager.GraphicsDevice.Viewport.Width + 50);
-
-                    do
-                    {
-                        numY = rand.Next(-enemy.Height - 49, ScreenManager.GraphicsDevice.Viewport.Height + 50);
-                    } while (numY > -enemy.Height && numY < ScreenManager.GraphicsDevice.Viewport.Height);
-                }
-
-                bulletRect[i] = new RectangleF(numX, numY, enemy.Width, enemy.Height);
-            }
-
-            snakeMovementArray = new Vector2[snakeRect.Length];
-            bulletMovementArray = new Vector2[bulletRect.Length];
-
-            playerSpeed = 10f;
-            enemySpeed = 15f;
-
-            timer = 0;
-
-            bulletLevelQuarter = 0;
-
-            snakeSpawn = false;
-            snakeExplode = false;
-
-            // Setup circular blade position
-            centerX = -100;
-            centerY = -100;
-            radius = 100;
-            speed = 60;
-            speedScale = (float)((0.001 * 2 * Math.PI) / speed);
-            circlePosition = new RectangleF[4];
-            for (int i = 0; i < circlePosition.Length; i++)
-            {
-                circlePosition[i] = new RectangleF(-100, -100, enemy.Width, enemy.Height);
-            }
-
-            circMoveX = 5;
-            circMoveY = 5;
-
-            playerCollide = false;
-
-            // once the load has finished, we use ResetElapsedTime to tell the game's
-            // timing mechanism that we have just finished a very long frame, and that
-            // it should not try to catch up.
-            ScreenManager.Game.ResetElapsedTime();
+                            ScreenManager.AddScreen(new DefeatScreen(), PlayerIndex.One);
+                        }*/
         }
 
         /// <summary>
@@ -660,9 +679,30 @@ namespace GameStateManagementSample
             {
                 spriteBatch.Draw(enemy, circlePosition[i].Position, Color.Black);
             }
+            
+            Vector2 timerPos = new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right - gameFont.MeasureString(timerInt.ToString()).X - 50, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top  + gameFont.MeasureString(timerInt.ToString()).Y);
 
-            spriteBatch.DrawString(gameFont, timer.ToString(), new Vector2(100, 100), Color.White);
-            spriteBatch.DrawString(gameFont, bulletLevelQuarter.ToString(), new Vector2(100, 150), Color.White);
+            spriteBatch.DrawString(gameFont, timerInt.ToString(), timerPos, Color.White);
+
+            for (int i = 0; i < bulletRect.Length; i++)
+            {
+                if (bulletRect[i].X <= ScreenManager.GraphicsDevice.Viewport.X || bulletRect[i].X >= ScreenManager.GraphicsDevice.Viewport.Width)
+                {
+                    if (bulletRect[i].Y <= ScreenManager.GraphicsDevice.Viewport.Y || bulletRect[i].Y >= ScreenManager.GraphicsDevice.Viewport.Height)
+                    {
+                        spriteBatch.DrawString(gameFont, "Pos: Off Screen", new Vector2(10, i * 30), Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(gameFont, "Pos: In Screen", new Vector2(10, i * 30), Color.White);
+                    }
+                }
+                else
+                {
+                    spriteBatch.DrawString(gameFont, "Pos: In Screen", new Vector2(10, i * 30), Color.White);
+                }
+            }
+
             spriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.

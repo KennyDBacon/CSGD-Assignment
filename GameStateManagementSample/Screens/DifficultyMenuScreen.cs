@@ -25,14 +25,12 @@ namespace GameStateManagementSample
         MenuEntry bullet;
         MenuEntry snake;
         MenuEntry blade;
-
-        string enabled = "Enabled";
-        string disabled = "Disabled";
+        MenuEntry defaultSetting;
 
         #endregion
 
         #region Initialization
-
+        GameSettings gameSettings;
 
         /// <summary>
         /// Constructor.
@@ -40,9 +38,12 @@ namespace GameStateManagementSample
         public DifficultyMenuScreen()
             : base("Difficulty Settings")
         {
+            gameSettings = new GameSettings();
+
             bullet = new MenuEntry(string.Empty);
             snake = new MenuEntry(string.Empty);
             blade = new MenuEntry(string.Empty);
+            defaultSetting = new MenuEntry(string.Empty);
 
             SetMenuEntryText();
 
@@ -52,26 +53,40 @@ namespace GameStateManagementSample
             bullet.Selected += BulletSelected;
             snake.Selected += SnakeSelected;
             blade.Selected += BladeSelected;
+            defaultSetting.Selected += DefaultSelected;
             back.Selected += OnCancel;
             
             // Add entries to the menu.
             MenuEntries.Add(bullet);
             MenuEntries.Add(snake);
             MenuEntries.Add(blade);
+            MenuEntries.Add(defaultSetting);
             MenuEntries.Add(back);
         }
 
         void SetMenuEntryText()
         {
-            // default settings if player set everything to false
-            if (ScreenManager.BulletEnabled == false && ScreenManager.SnakeEnabled == false && ScreenManager.BladeEnabled == false)
+            bullet.Text = "Bullet: " + gameSettings.Bullet.ToString();
+
+            if (gameSettings.Snake == true)
             {
-                ScreenManager.BulletEnabled = true;
+                snake.Text = "Snake: Released";
+            }
+            else
+            {
+                snake.Text = "Snake: In cage";
             }
 
-            bullet.Text = "Bullet: " + ScreenManager.BulletEnabled;
-            snake.Text = "Snake: " + ScreenManager.SnakeEnabled;
-            blade.Text = "Circular Blade: " + ScreenManager.BladeEnabled;
+            if (gameSettings.Blade == true)
+            {
+                blade.Text = "Circular Blade: Activated";
+            }
+            else
+            {
+                blade.Text = "Circular Blade: Deactivated";
+            }
+
+            gameSettings.Save();
         }
 
         #endregion
@@ -80,21 +95,32 @@ namespace GameStateManagementSample
 
         void BulletSelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.BulletEnabled = !ScreenManager.BulletEnabled;
+            gameSettings.Bullet += 1;
 
+            if (gameSettings.Bullet == 11)
+                gameSettings.Bullet = 5;
             SetMenuEntryText();
         }
 
         void SnakeSelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.SnakeEnabled = !ScreenManager.SnakeEnabled;
+            gameSettings.Snake = !gameSettings.Snake;
 
             SetMenuEntryText();
         }
 
         void BladeSelected(object sender, PlayerIndexEventArgs e)
         {
-            ScreenManager.BladeEnabled = !ScreenManager.BladeEnabled;
+            gameSettings.Blade = !gameSettings.Blade;
+
+            SetMenuEntryText();
+        }
+
+        void DefaultSelected(object sender, PlayerIndexEventArgs e)
+        {
+            gameSettings.Bullet = 5;
+            gameSettings.Snake = false;
+            gameSettings.Blade = false;
 
             SetMenuEntryText();
         }
