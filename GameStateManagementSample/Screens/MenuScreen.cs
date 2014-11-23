@@ -251,7 +251,7 @@ namespace GameStateManagementSample
             Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
             Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
             Color titleColor = new Color(192, 192, 192) * TransitionAlpha;
-            float titleScale = 1.25f;
+            float titleScale = 2f;
 
             titlePosition.Y -= transitionOffset * 100;
 

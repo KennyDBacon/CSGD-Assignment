@@ -26,11 +26,11 @@ namespace GameStateManagementSample
         /// Constructor.
         /// </summary>
         public GameStartScreen()
-            : base("Are you ready?")
+            : base("Survive for 1 minute!")
         {
             // Create our menu entries.
-            MenuEntry resumeGameMenuEntry = new MenuEntry("Yes!");
-            MenuEntry quitGameMenuEntry = new MenuEntry("Not really...");
+            MenuEntry resumeGameMenuEntry = new MenuEntry("Ok! Let's go!");
+            MenuEntry quitGameMenuEntry = new MenuEntry("Maybe next time...");
 
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += StartGameSelected;

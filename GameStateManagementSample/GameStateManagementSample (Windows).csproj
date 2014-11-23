@@ -72,6 +72,7 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
+    <Compile Include="Screens\ControlsScreen.cs" />
     <Compile Include="Screens\GameStartScreen.cs" />
     <Compile Include="Screens\VictoryScreen.cs" />
     <Compile Include="Screens\DefeatScreen.cs" />
@@ -84,11 +85,6 @@
     <Compile Include="Screens\DifficultyMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
-    <Compile Include="GameSettings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GameSettings.settings</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -155,10 +151,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="GameSettings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>GameSettings.Designer.cs</LastGenOutput>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

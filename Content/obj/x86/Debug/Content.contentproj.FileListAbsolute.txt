@@ -1,4 +1,0 @@
-C:\Users\Kenny\Desktop\CSGD\Content\obj\x86\Debug\Content.contentprojResolveAssemblyReference.cache
-C:\Users\Kenny\Documents\CSGD-Assignment\Content\obj\x86\Debug\Content.contentprojResolveAssemblyReference.cache
-C:\Users\User\Desktop\CSGD\Content\obj\x86\Debug\Content.contentprojResolveAssemblyReference.cache
-C:\Users\Kenny\Desktop\New folder\Content\obj\x86\Debug\Content.contentprojResolveAssemblyReference.cache

@@ -9,6 +9,7 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
+using GameStateManagement;
 #endregion
 
 namespace GameStateManagementSample
@@ -30,7 +31,7 @@ namespace GameStateManagementSample
         #endregion
 
         #region Initialization
-        GameSettings gameSettings;
+        //GameSettings gameSettings;
 
         /// <summary>
         /// Constructor.
@@ -38,7 +39,7 @@ namespace GameStateManagementSample
         public DifficultyMenuScreen()
             : base("Difficulty Settings")
         {
-            gameSettings = new GameSettings();
+            //gameSettings = new GameSettings();
 
             bullet = new MenuEntry(string.Empty);
             snake = new MenuEntry(string.Empty);
@@ -66,9 +67,9 @@ namespace GameStateManagementSample
 
         void SetMenuEntryText()
         {
-            bullet.Text = "Bullet: " + gameSettings.Bullet.ToString();
+            bullet.Text = "Bullet: " + BulletAmount.ToString();
 
-            if (gameSettings.Snake == true)
+            if (SnakeEnabled == true)
             {
                 snake.Text = "Snake: Released";
             }
@@ -77,7 +78,7 @@ namespace GameStateManagementSample
                 snake.Text = "Snake: In cage";
             }
 
-            if (gameSettings.Blade == true)
+            if (BladeEnabled == true)
             {
                 blade.Text = "Circular Blade: Activated";
             }
@@ -86,7 +87,9 @@ namespace GameStateManagementSample
                 blade.Text = "Circular Blade: Deactivated";
             }
 
-            gameSettings.Save();
+            defaultSetting.Text = "Restore Default";
+
+            //gameSettings.Save();
         }
 
         #endregion
@@ -95,32 +98,32 @@ namespace GameStateManagementSample
 
         void BulletSelected(object sender, PlayerIndexEventArgs e)
         {
-            gameSettings.Bullet += 1;
+            BulletAmount += 1;
 
-            if (gameSettings.Bullet == 11)
-                gameSettings.Bullet = 5;
+            if (BulletAmount == 11)
+                BulletAmount = 5;
             SetMenuEntryText();
         }
 
         void SnakeSelected(object sender, PlayerIndexEventArgs e)
         {
-            gameSettings.Snake = !gameSettings.Snake;
+            SnakeEnabled = !SnakeEnabled;
 
             SetMenuEntryText();
         }
 
         void BladeSelected(object sender, PlayerIndexEventArgs e)
         {
-            gameSettings.Blade = !gameSettings.Blade;
+            BladeEnabled = !BladeEnabled;
 
             SetMenuEntryText();
         }
 
         void DefaultSelected(object sender, PlayerIndexEventArgs e)
         {
-            gameSettings.Bullet = 5;
-            gameSettings.Snake = false;
-            gameSettings.Blade = false;
+            BulletAmount = 5;
+            SnakeEnabled = false;
+            BladeEnabled = false;
 
             SetMenuEntryText();
         }

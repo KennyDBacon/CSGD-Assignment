@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GameStateManagementSample")]
+[assembly: AssemblyTitle("The Crazy Dodger")]
 [assembly: AssemblyProduct("GameStateManagementSample")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Try to dodge everything")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
 [assembly: AssemblyTrademark("")]

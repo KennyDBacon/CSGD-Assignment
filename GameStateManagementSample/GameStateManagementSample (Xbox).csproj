@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GameStateManagement</RootNamespace>
-    <AssemblyName>GameStateManagementSample</AssemblyName>
+    <AssemblyName>The Crazy Dodger</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -70,16 +70,19 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
+    <Compile Include="Screens\ControlsScreen.cs" />
+    <Compile Include="Screens\DefeatScreen.cs" />
+    <Compile Include="Screens\DifficultyMenuScreen.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
+    <Compile Include="Screens\GameStartScreen.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuEntry.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\MessageBoxScreen.cs" />
-    <Compile Include="Screens\ModeStartPauseScreen.cs" />
-    <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="Screens\VictoryScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

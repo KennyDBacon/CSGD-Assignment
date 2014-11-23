@@ -216,8 +216,28 @@ namespace GameStateManagement
         }
 
         bool isSerializable = true;
-        
-        
+
+        int bulletAmount = 5;
+        public int BulletAmount
+        {
+            get { return bulletAmount; }
+            set { bulletAmount = value; }
+        }
+
+        bool snakeEnabled = false;
+        public bool SnakeEnabled
+        {
+            get { return snakeEnabled; }
+            set { snakeEnabled = value; }
+        }
+
+        bool bladeEnabled = false;
+        public bool BladeEnabled
+        {
+            get { return bladeEnabled; }
+            set { bladeEnabled = value; }
+        }
+
         /// <summary>
         /// Activates the screen. Called when the screen is added to the screen manager or if the game resumes
         /// from being paused or tombstoned.

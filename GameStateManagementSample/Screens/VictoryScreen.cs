@@ -11,6 +11,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using GameStateManagement;
 #endregion
 
 namespace GameStateManagementSample
@@ -26,7 +27,7 @@ namespace GameStateManagementSample
         ContentManager content;
         SpriteFont font;
 
-        GameSettings gameSettings;
+        //GameSettings gameSettings;
 
         /// <summary>
         /// Constructor.
@@ -34,7 +35,7 @@ namespace GameStateManagementSample
         public VictoryScreen()
             : base("Victory!")
         {
-            gameSettings = new GameSettings();
+            //gameSettings = new GameSettings();
 
             // Create our menu entries.
             MenuEntry restartGameMenuEntry = new MenuEntry("Another!");
@@ -103,10 +104,10 @@ namespace GameStateManagementSample
             Vector2 centerScreen = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2, ScreenManager.GraphicsDevice.Viewport.Height / 2);
             string congrat = "Congratulations!";
             string msg1 = "You've survived against";
-            string msg2 = gameSettings.Bullet + " Bullets";
+            string msg2 = BulletAmount + " Bullets";
 
             string msg3 = "";
-            if (gameSettings.Snake == true)
+            if (SnakeEnabled == true)
             {
                 msg3 = "One crazy exploding snake";
             }
@@ -116,7 +117,7 @@ namespace GameStateManagementSample
             }
 
             string msg4 = "";
-            if (gameSettings.Blade == true)
+            if (BladeEnabled == true)
             {
                 msg4 = "One killer boxy blade";
             }

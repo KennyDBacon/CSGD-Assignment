@@ -30,7 +30,7 @@ namespace GameStateManagementSample
 
         ContentManager content;
         SpriteFont gameFont;
-        GameSettings gameSettings;
+        //GameSettings gameSettings;
 
         Random random = new Random();
 
@@ -100,7 +100,7 @@ namespace GameStateManagementSample
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
                 gameFont = content.Load<SpriteFont>("gamefont");
-                gameSettings = new GameSettings();
+                //gameSettings = new GameSettings();
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -137,7 +137,7 @@ namespace GameStateManagementSample
 
             // How many enemies will there be
             snakeRect = new RectangleF[10];
-            bulletRect = new RectangleF[gameSettings.Bullet];
+            bulletRect = new RectangleF[10];
 
             for (int i = 0; i < snakeRect.Length; i++)
             {
@@ -286,13 +286,13 @@ namespace GameStateManagementSample
                         BulletLevel();
 
                         // Snake movement
-                        if (gameSettings.Snake == true)
+                        if (SnakeEnabled == true)
                         {
                             SnakeMovement();
                         }
 
                         // circular blade movement
-                        if (gameSettings.Blade == true)
+                        if (BladeEnabled == true)
                         {
                             angle = (float)gameTime.TotalGameTime.TotalSeconds;
                             CircularBlade(angle);
@@ -469,7 +469,7 @@ namespace GameStateManagementSample
         #region Bullet Level
         public void BulletLevel()
         {
-            if (bulletLevelQuarter < gameSettings.Bullet)
+            if (bulletLevelQuarter < bulletRect.Length)
             {
                 if (timer >= bulletLevelQuarter * 3) // Spawn new enemy every 3 seconds
                 {
@@ -486,8 +486,6 @@ namespace GameStateManagementSample
                 bulletRect[index].X += bulletMovementArray[index].X;
                 bulletRect[index].Y += bulletMovementArray[index].Y;
 
-                CheckCollision(bulletRect[index]);
-
                 if (bulletRect[index].Right > ScreenManager.GraphicsDevice.Viewport.Width + enemy.Width + 70 ||
                     bulletRect[index].Left < ScreenManager.GraphicsDevice.Viewport.X - enemy.Width - 70 ||
                     bulletRect[index].Bottom > ScreenManager.GraphicsDevice.Viewport.Height + enemy.Height + 70 ||
@@ -496,6 +494,8 @@ namespace GameStateManagementSample
                     // Moving right
                     BulletSpawnPoint(index);
                 }
+
+                CheckCollision(bulletRect[index]);
             }
         }
 
@@ -537,12 +537,12 @@ namespace GameStateManagementSample
 
         public void CheckCollision(RectangleF tempRect)
         {
-            /*
             // Game end
-            if(tempRect.Left <= playerRect.Right)
-                if(tempRect.Right >= playerRect.Left)
-                    if (tempRect.Top <= playerRect.Bottom)
-                        if (tempRect.Bottom >= playerRect.Top)
+            // Plus and minus 5 to make the image seemingly intersect
+            if(tempRect.Left + 5 < playerRect.Right)
+                if(tempRect.Right - 5 > playerRect.Left)
+                    if (tempRect.Top + 5 < playerRect.Bottom)
+                        if (tempRect.Bottom - 5 > playerRect.Top)
                         {
                             playerCollide = true;
                             ScreenManager.ResetGame = true;
@@ -556,7 +556,7 @@ namespace GameStateManagementSample
 
                             ExitScreen();
                             ScreenManager.AddScreen(new DefeatScreen(), PlayerIndex.One);
-                        }*/
+                        }
         }
 
         /// <summary>
@@ -683,25 +683,6 @@ namespace GameStateManagementSample
             Vector2 timerPos = new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right - gameFont.MeasureString(timerInt.ToString()).X - 50, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top  + gameFont.MeasureString(timerInt.ToString()).Y);
 
             spriteBatch.DrawString(gameFont, timerInt.ToString(), timerPos, Color.White);
-
-            for (int i = 0; i < bulletRect.Length; i++)
-            {
-                if (bulletRect[i].X <= ScreenManager.GraphicsDevice.Viewport.X || bulletRect[i].X >= ScreenManager.GraphicsDevice.Viewport.Width)
-                {
-                    if (bulletRect[i].Y <= ScreenManager.GraphicsDevice.Viewport.Y || bulletRect[i].Y >= ScreenManager.GraphicsDevice.Viewport.Height)
-                    {
-                        spriteBatch.DrawString(gameFont, "Pos: Off Screen", new Vector2(10, i * 30), Color.White);
-                    }
-                    else
-                    {
-                        spriteBatch.DrawString(gameFont, "Pos: In Screen", new Vector2(10, i * 30), Color.White);
-                    }
-                }
-                else
-                {
-                    spriteBatch.DrawString(gameFont, "Pos: In Screen", new Vector2(10, i * 30), Color.White);
-                }
-            }
 
             spriteBatch.End();
 
