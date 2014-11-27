@@ -35,6 +35,28 @@ namespace GameStateManagement
     /// </summary>
     public abstract class GameScreen
     {
+
+        int bulletAmount = 5;
+        public int BulletAmount
+        {
+            get { return bulletAmount; }
+            set { bulletAmount = value; }
+        }
+
+        bool snakeEnabled = true;
+        public bool SnakeEnabled
+        {
+            get { return snakeEnabled; }
+            set { snakeEnabled = value; }
+        }
+
+        bool bladeEnabled = true;
+        public bool BladeEnabled
+        {
+            get { return bladeEnabled; }
+            set { bladeEnabled = value; }
+        }
+
         /// <summary>
         /// Normally when one screen is brought up over the top of another,
         /// the first screen will transition off to make room for the new
@@ -216,27 +238,6 @@ namespace GameStateManagement
         }
 
         bool isSerializable = true;
-
-        int bulletAmount = 5;
-        public int BulletAmount
-        {
-            get { return bulletAmount; }
-            set { bulletAmount = value; }
-        }
-
-        bool snakeEnabled = false;
-        public bool SnakeEnabled
-        {
-            get { return snakeEnabled; }
-            set { snakeEnabled = value; }
-        }
-
-        bool bladeEnabled = false;
-        public bool BladeEnabled
-        {
-            get { return bladeEnabled; }
-            set { bladeEnabled = value; }
-        }
 
         /// <summary>
         /// Activates the screen. Called when the screen is added to the screen manager or if the game resumes

@@ -137,7 +137,7 @@ namespace GameStateManagementSample
 
             // How many enemies will there be
             snakeRect = new RectangleF[10];
-            bulletRect = new RectangleF[10];
+            bulletRect = new RectangleF[BulletAmount];
 
             for (int i = 0; i < snakeRect.Length; i++)
             {
@@ -654,7 +654,7 @@ namespace GameStateManagementSample
         {
             // This game has a blue background. Why? Because!
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
-                                               Color.CornflowerBlue, 0, 0);
+                                               Color.LightGray, 0, 0);
 
             // Our player and enemy are both actually just text strings.
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
@@ -664,25 +664,25 @@ namespace GameStateManagementSample
             for (int i = 0; i < bulletRect.Length; i++)
             {
                 Vector2 bulletStartSpawn = bulletRect[i].Position;
-                spriteBatch.Draw(enemy, bulletStartSpawn, Color.Yellow);
+                spriteBatch.Draw(enemy, bulletStartSpawn, Color.DarkBlue);
             }
 
             for (int i = 0; i < snakeRect.Length; i++)
             {
                 Vector2 enemyStartSpawn = snakeRect[i].Position;
-                spriteBatch.Draw(enemy, enemyStartSpawn, Color.Red);
+                spriteBatch.Draw(enemy, enemyStartSpawn, Color.Green);
             }
 
-            spriteBatch.Draw(playerTex, playerRect.Position, Color.White);
+            spriteBatch.Draw(playerTex, playerRect.Position, Color.Black);
 
             for (int i = 0; i < circlePosition.Length; i++)
             {
-                spriteBatch.Draw(enemy, circlePosition[i].Position, Color.Black);
+                spriteBatch.Draw(enemy, circlePosition[i].Position, Color.Green);
             }
-            
-            Vector2 timerPos = new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right - gameFont.MeasureString(timerInt.ToString()).X - 50, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top  + gameFont.MeasureString(timerInt.ToString()).Y);
 
-            spriteBatch.DrawString(gameFont, timerInt.ToString(), timerPos, Color.White);
+            Vector2 timerPos = new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right - gameFont.MeasureString("Timer: " + timerInt.ToString()).X - 50, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top + gameFont.MeasureString("Timer: " + timerInt.ToString()).Y);
+
+            spriteBatch.DrawString(gameFont, "Timer: " + timerInt.ToString(), timerPos, Color.Black);
 
             spriteBatch.End();
 

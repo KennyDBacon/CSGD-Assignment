@@ -90,7 +90,6 @@ namespace GameStateManagementSample
             base.Update(gameTime, otherScreenHasFocus, false);
         }
 
-
         /// <summary>
         /// Draws the background screen.
         /// </summary>
@@ -107,7 +106,6 @@ namespace GameStateManagementSample
 
             spriteBatch.End();
         }
-
 
         #endregion
     }

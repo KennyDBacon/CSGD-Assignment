@@ -137,6 +137,12 @@ namespace GameStateManagementSample
             base.Draw(gameTime);
         }
 
+        protected override void OnCancel(PlayerIndex playerIndex)
+        {
+            base.OnCancel(playerIndex);
+
+        }
+
         #endregion
     }
 }

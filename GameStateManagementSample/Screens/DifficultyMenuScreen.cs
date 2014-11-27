@@ -9,7 +9,6 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
-using GameStateManagement;
 #endregion
 
 namespace GameStateManagementSample
@@ -87,9 +86,31 @@ namespace GameStateManagementSample
                 blade.Text = "Circular Blade: Deactivated";
             }
 
-            defaultSetting.Text = "Restore Default";
+            /*
+            bullet.Text = "Bullet: " + gameSettings.Bullet.ToString();
 
-            //gameSettings.Save();
+            if (gameSettings.Snake == true)
+            {
+                snake.Text = "Snake: Released";
+            }
+            else
+            {
+                snake.Text = "Snake: In cage";
+            }
+
+            if (gameSettings.Blade == true)
+            {
+                blade.Text = "Circular Blade: Activated";
+            }
+            else
+            {
+                blade.Text = "Circular Blade: Deactivated";
+            }
+
+            gameSettings.Save();
+            */
+
+            defaultSetting.Text = "Restore Default";
         }
 
         #endregion
@@ -102,6 +123,12 @@ namespace GameStateManagementSample
 
             if (BulletAmount == 11)
                 BulletAmount = 5;
+
+            /*
+            gameSettings.Bullet += 1;
+            if (gameSettings.Bullet >= 11)
+                gameSettings.Bullet = 5;
+            */
             SetMenuEntryText();
         }
 
@@ -109,12 +136,16 @@ namespace GameStateManagementSample
         {
             SnakeEnabled = !SnakeEnabled;
 
+            //gameSettings.Snake = !gameSettings.Snake;
+
             SetMenuEntryText();
         }
 
         void BladeSelected(object sender, PlayerIndexEventArgs e)
         {
             BladeEnabled = !BladeEnabled;
+
+            //gameSettings.Blade = !gameSettings.Blade;
 
             SetMenuEntryText();
         }
@@ -124,6 +155,12 @@ namespace GameStateManagementSample
             BulletAmount = 5;
             SnakeEnabled = false;
             BladeEnabled = false;
+
+            /*
+            gameSettings.Bullet = 5;
+            gameSettings.Snake = false;
+            gameSettings.Blade = false;
+            */
 
             SetMenuEntryText();
         }

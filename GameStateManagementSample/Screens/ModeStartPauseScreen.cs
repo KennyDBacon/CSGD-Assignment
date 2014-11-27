@@ -17,7 +17,7 @@ namespace GameStateManagementSample
     /// The pause menu comes up over the top of the game,
     /// giving the player options to resume or quit.
     /// </summary>
-    class GameStartScreen : MenuScreen
+    class ModeStartPauseScreen : MenuScreen
     {
         #region Initialization
 
@@ -25,12 +25,12 @@ namespace GameStateManagementSample
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameStartScreen()
-            : base("You are the black box\nSurvive for 1 minute!")
+        public ModeStartPauseScreen()
+            : base("Are you ready?")
         {
             // Create our menu entries.
-            MenuEntry resumeGameMenuEntry = new MenuEntry("Ok! Let's go!");
-            MenuEntry quitGameMenuEntry = new MenuEntry("Maybe next time...");
+            MenuEntry resumeGameMenuEntry = new MenuEntry("Yes!");
+            MenuEntry quitGameMenuEntry = new MenuEntry("Not really...");
 
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += StartGameSelected;
@@ -80,6 +80,7 @@ namespace GameStateManagementSample
             LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(),
                                                            new MainMenuScreen());
         }
+
 
         #endregion
     }

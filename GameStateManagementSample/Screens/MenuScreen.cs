@@ -78,10 +78,10 @@ namespace GameStateManagementSample
                 new Buttons[] { Buttons.A, Buttons.Start },
                 new Keys[] { Keys.Enter, Keys.Space },
                 true);
-            menuCancel = new InputAction(
-                new Buttons[] { Buttons.B, Buttons.Back },
-                new Keys[] { Keys.Escape },
-                true);
+            //menuCancel = new InputAction(
+                //new Buttons[] { Buttons.B, Buttons.Back },
+                //new Keys[] { Keys.Escape },
+                //true);
         }
 
 
@@ -125,10 +125,10 @@ namespace GameStateManagementSample
             {
                 OnSelectEntry(selectedEntry, playerIndex);
             }
-            else if (menuCancel.Evaluate(input, ControllingPlayer, out playerIndex))
-            {
-                OnCancel(playerIndex);
-            }
+            //else if (menuCancel.Evaluate(input, ControllingPlayer, out playerIndex))
+           // {
+           //     OnCancel(playerIndex);
+           // }
         }
 
 

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{c7180460-64a9-4a8c-8272-d520add402d4}</ProjectGuid>
+    <ProjectGuid>{2A212CC6-C4AD-4D42-80BF-F3F9833B2745}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Xbox 360</Platform>
@@ -115,11 +115,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="GameThumbnail.png">
-      <XnaPlatformSpecific>true</XnaPlatformSpecific>
-    </None>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Content\Content.contentproj">
       <Project>{44459A75-F2CF-4B58-89EA-79154AF5C1AF}</Project>
@@ -127,9 +123,14 @@
       <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
     <ProjectReference Include="..\GameStateManagement\Xbox 360 Copy of GameStateManagement (Windows).csproj">
-      <Project>{306c826a-005f-451e-a918-7284c99a16b0}</Project>
+      <Project>{c7e11f59-772e-4df3-8110-eb0b1e319d9b}</Project>
       <Name>Xbox 360 Copy of GameStateManagement (Windows)</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GameThumbnail.png">
+      <XnaPlatformSpecific>true</XnaPlatformSpecific>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework" />

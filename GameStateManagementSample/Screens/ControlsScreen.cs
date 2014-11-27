@@ -54,7 +54,7 @@ namespace GameStateManagementSample
 
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
 
-            if (gamePadState.IsButtonDown(Buttons.B))
+            if (gamePadState.IsButtonDown(Buttons.Back))
             {
                 ExitScreen();
             }
@@ -65,7 +65,8 @@ namespace GameStateManagementSample
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
-            spriteBatch.Draw(controlsImg, new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.X, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            spriteBatch.Draw(controlsImg, new Rectangle(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.X, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Y,
+                                                        ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Width, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Height), Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
