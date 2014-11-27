@@ -26,7 +26,6 @@ namespace GameStateManagementSample
     {
         #region Fields
 
-        string message;
         Texture2D gradientTexture;
         Texture2D exitConfirm;
 
@@ -162,13 +161,13 @@ namespace GameStateManagementSample
             //Vector2 textPosition = (viewportSize - textSize) / 2;
 
             // The background includes a border somewhat larger than the text itself.
-            const int hPad = 32;
-            const int vPad = 16;
+            //const int hPad = 32;
+            //const int vPad = 16;
 
-            /*Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
-                                                          (int)textPosition.Y - vPad,
-                                                          (int)textSize.X + hPad * 2,
-                                                          (int)textSize.Y + vPad * 2);*/
+            //Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
+            //                                            (int)textPosition.Y - vPad,
+            //                                            (int)textSize.X + hPad * 2,
+            //                                            (int)textSize.Y + vPad * 2);
 
             // Fade the popup alpha during transitions.
             Color color = Color.White * TransitionAlpha;
